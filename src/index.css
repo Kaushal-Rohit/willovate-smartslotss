@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  min-height: 100%;
+  background: #f8fafc;
+}
+
+html.dark {
+  background: #020617;
+}
+
+body,
+#root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  background: #f8fafc;
+  color: #020617;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 420ms cubic-bezier(0.16, 1, 0.3, 1), color 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.dark body {
+  background: #020617;
+  color: #f8fafc;
+}
+
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: 420ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.24);
+}
+
+@layer utilities {
+  .animate-in {
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .fade-in {
+    animation-name: fadeIn;
+  }
+  .zoom-in {
+    animation-name: zoomIn;
+  }
+  .fill-mode-both {
+    animation-fill-mode: both;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes zoomIn {
+    0% { transform: scale(0.85) translateY(20px); opacity: 0; }
+    50% { transform: scale(1.02); opacity: 1; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
