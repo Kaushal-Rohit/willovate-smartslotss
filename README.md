@@ -234,7 +234,7 @@ VITE_USE_MOCK_DATA=false
 
 ## Demo Video
 
-
+https://drive.google.com/file/d/1gPqe7tT04TQeXcUwDNMmRGdIou8YTugs/view?usp=sharing
 
 ## Submission Note
 
