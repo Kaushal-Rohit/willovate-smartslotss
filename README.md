@@ -234,7 +234,7 @@ VITE_USE_MOCK_DATA=false
 
 ## Demo Video
 
-Add the final 2-3 minute demo video link here.
+
 
 ## Submission Note
 
