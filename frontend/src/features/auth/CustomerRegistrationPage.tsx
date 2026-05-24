@@ -4,6 +4,7 @@ import { GlassButton } from '../../components/ui/GlassButton';
 import { InputField } from '../../components/ui/InputField';
 import { CustomerAccount } from '../../types';
 import { authenticateCustomer } from '../../services/dataStore';
+import { ApiError, loginCustomerApi, shouldUseApi, syncApiData } from '../../services/apiClient';
 
 export const CustomerRegistrationPage: React.FC<{ onLogin?: (account: CustomerAccount) => void }> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -11,10 +12,25 @@ export const CustomerRegistrationPage: React.FC<{ onLogin?: (account: CustomerAc
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+
+    try {
+      if (shouldUseApi()) {
+        const account = await loginCustomerApi(email, password);
+        await syncApiData();
+        onLogin?.(account);
+        return;
+      }
+    } catch (apiError) {
+      if (apiError instanceof ApiError && apiError.status !== 0) {
+        setError(apiError.message);
+        setIsLoading(false);
+        return;
+      }
+    }
 
     window.setTimeout(() => {
       const account = authenticateCustomer(email, password);

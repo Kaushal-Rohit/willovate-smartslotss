@@ -10,7 +10,12 @@ The platform is designed for restaurants, gyms, salons, clinics, coaching classe
 
 ## Current Implementation Note
 
-This repository currently contains the React + TypeScript frontend implementation in `frontend/` with a localStorage-backed mock data layer that mirrors the required API/data model. The PDF-required backend stack is documented below for submission alignment, but no .NET backend project files were present in this checkout.
+This repository now contains both required project parts:
+
+- `frontend/`: React + TypeScript + Tailwind marketplace/admin panel.
+- `backend/`: .NET 8 Web API with EF Core, SQL Server configuration, DTO-based controllers, Swagger/OpenAPI, seeded demo credentials, and required booking business rules.
+
+The frontend still keeps a localStorage demo fallback. Set `VITE_USE_MOCK_DATA=false` to connect it to the Web API.
 
 ## Features
 
@@ -39,7 +44,7 @@ This repository currently contains the React + TypeScript frontend implementatio
 - Motion/UI: Framer Motion, Lucide React
 - Charts: Recharts
 - Backend: .NET 8 Web API
-- Database: PostgreSQL or SQL Server
+- Database: SQL Server through Entity Framework Core
 - API Docs: Swagger/OpenAPI
 
 ## User Roles
@@ -66,7 +71,7 @@ Can view active public offers, inspect offer details, select an available slot, 
 
 ## Required API List
 
-The backend required by the PDF should expose:
+The backend exposes:
 
 ```text
 POST /api/auth/login
@@ -97,7 +102,7 @@ GET /api/dashboard/summary
 
 ## Database Tables
 
-Suggested tables from the PDF:
+Implemented EF Core tables:
 
 - Users
 - Businesses
@@ -163,17 +168,37 @@ http://localhost:5173
 
 ## Backend Setup
 
-No .NET backend project files were present in this checkout. When adding the required backend, use .NET 8 Web API with Swagger/OpenAPI and PostgreSQL or SQL Server.
-
-Recommended commands for a future backend folder:
+Install .NET 8 SDK and SQL Server or LocalDB, then update the connection string if needed:
 
 ```bash
+cd backend
 dotnet restore
 dotnet build
 dotnet run
 ```
 
-For ASP.NET Core JSON circular reference protection, configure controllers with:
+Default backend URLs:
+
+```text
+http://localhost:5000
+https://localhost:5001
+```
+
+Swagger/OpenAPI:
+
+```text
+http://localhost:5000/swagger
+```
+
+The backend uses `Database.EnsureCreated()` in development to create the SQL Server schema for demo use. For production, create EF migrations from `backend/`:
+
+```bash
+dotnet restore
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
+
+ASP.NET Core JSON circular reference protection is configured in `backend/Program.cs`:
 
 ```csharp
 builder.Services.AddControllers()
@@ -187,21 +212,34 @@ builder.Services.AddControllers()
     });
 ```
 
-Prefer DTOs over returning raw EF entities directly.
+Controllers return DTOs instead of raw EF entities.
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` for local frontend development.
+Copy `frontend/.env.example` to `frontend/.env.local` for local frontend development.
 
 ```bash
-cp .env.example frontend/.env.local
+cp frontend/.env.example frontend/.env.local
 ```
+
+Frontend API settings:
+
+```text
+VITE_API_BASE_URL=http://localhost:5000
+VITE_USE_MOCK_DATA=false
+```
+
+Backend connection string lives in `backend/appsettings.json`. Use `backend/appsettings.example.json` as the safe template.
 
 Do not commit real secrets, database passwords, API keys, JWT secrets, or private connection strings.
 
 ## How To Run
 
 ```bash
+cd backend
+dotnet restore
+dotnet run
+
 cd frontend
 npm install
 npm run build

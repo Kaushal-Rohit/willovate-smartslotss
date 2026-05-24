@@ -575,6 +575,65 @@ export const initializeStore = () => {
   }
 };
 
+export const hydrateStoreFromApi = (data: {
+  businesses?: Business[];
+  offers?: Offer[];
+  slots?: OfferSlot[];
+  bookings?: Booking[];
+}) => {
+  if (data.businesses?.length) {
+    writeStore(STORE_KEYS.businesses, data.businesses);
+  }
+
+  if (data.offers) {
+    const normalizedOffers = data.offers.map(normalizeOffer);
+    writeStore(STORE_KEYS.offers, normalizedOffers);
+
+    const existingCategories = readStore<Category[]>(STORE_KEYS.categories, defaultCategories);
+    const derivedCategories = normalizedOffers.reduce<Category[]>((acc, offer) => {
+      const exists = acc.some(
+        (category) =>
+          category.businessId === offer.businessId
+          && category.name.toLowerCase() === offer.category.toLowerCase(),
+      );
+
+      if (!exists) {
+        acc.push({
+          id: `api-cat-${offer.businessId}-${offer.category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          businessId: offer.businessId,
+          name: offer.category,
+          description: 'Synced from backend offer data.',
+          color: 'blue',
+          createdAt: offer.createdAt || new Date().toISOString(),
+        });
+      }
+
+      return acc;
+    }, []);
+
+    const mergedCategories = [
+      ...existingCategories.filter(
+        (category) =>
+          !derivedCategories.some(
+            (derived) =>
+              derived.businessId === category.businessId
+              && derived.name.toLowerCase() === category.name.toLowerCase(),
+          ),
+      ),
+      ...derivedCategories,
+    ];
+    writeStore(STORE_KEYS.categories, mergedCategories);
+  }
+
+  if (data.slots) {
+    writeStore(STORE_KEYS.slots, data.slots.map(normalizeSlot));
+  }
+
+  if (data.bookings) {
+    writeStore(STORE_KEYS.bookings, data.bookings.map(normalizeBooking));
+  }
+};
+
 export const authenticateAdmin = (email: string, password: string): AdminAccount | null => {
   const credential = adminCredentials.find(
     (admin) => normalizeEmail(admin.email) === normalizeEmail(email) && admin.password === password,

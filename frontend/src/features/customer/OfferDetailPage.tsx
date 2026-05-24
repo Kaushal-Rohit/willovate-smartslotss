@@ -6,6 +6,7 @@ import { InputField } from '../../components/ui/InputField';
 import { useSlots } from '../../hooks/useOffers';
 import { CustomerAccount } from '../../types';
 import { createBookingRecord, getBusinessByOffer, getOfferById } from '../../services/dataStore';
+import { ApiError, createBookingApi, shouldUseApi, syncApiData } from '../../services/apiClient';
 
 interface OfferDetailPageProps {
   offerId: string;
@@ -33,6 +34,7 @@ export const OfferDetailPage: React.FC<OfferDetailPageProps> = ({ offerId, custo
   const [people, setPeople] = useState(1);
   const [specialNote, setSpecialNote] = useState('');
   const [error, setError] = useState('');
+  const [isBooking, setIsBooking] = useState(false);
 
   if (!offer || !business) {
     return (
@@ -48,7 +50,7 @@ export const OfferDetailPage: React.FC<OfferDetailPageProps> = ({ offerId, custo
   const selectedSlot = slots.find((slot) => slot.id === selectedSlotId);
   const remaining = selectedSlot ? selectedSlot.capacity - selectedSlot.bookedCount : 0;
 
-  const handleBooking = (event: React.FormEvent) => {
+  const handleBooking = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
 
@@ -67,6 +69,32 @@ export const OfferDetailPage: React.FC<OfferDetailPageProps> = ({ offerId, custo
       return;
     }
 
+    setIsBooking(true);
+
+    try {
+      if (shouldUseApi()) {
+        const booking = await createBookingApi({
+          offerId: offer.id,
+          slotId: selectedSlotId,
+          customerId: customer.id,
+          customerName: name.trim(),
+          customerPhone: phone.trim(),
+          customerEmail: email.trim(),
+          people,
+          specialNote,
+        });
+        await syncApiData({ businessId: offer.businessId, includeInactive: true });
+        onBooked?.(booking.id);
+        return;
+      }
+    } catch (apiError) {
+      if (apiError instanceof ApiError && apiError.status !== 0) {
+        setError(apiError.message);
+        setIsBooking(false);
+        return;
+      }
+    }
+
     const result = createBookingRecord({
       offerId: offer.id,
       slotId: selectedSlotId,
@@ -80,9 +108,11 @@ export const OfferDetailPage: React.FC<OfferDetailPageProps> = ({ offerId, custo
 
     if (!result.ok || !result.booking) {
       setError(result.error);
+      setIsBooking(false);
       return;
     }
 
+    setIsBooking(false);
     onBooked?.(result.booking.id);
   };
 
@@ -167,7 +197,7 @@ export const OfferDetailPage: React.FC<OfferDetailPageProps> = ({ offerId, custo
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Special Note</label>
                   <textarea value={specialNote} onChange={(event) => setSpecialNote(event.target.value)} rows={3} className="w-full rounded-xl border border-slate-300 bg-white/70 px-4 py-2.5 text-slate-900 dark:border-slate-700 dark:bg-slate-950/50 dark:text-white" />
                 </div>
-                <GlassButton type="submit" className="w-full py-3">
+                <GlassButton type="submit" className="w-full py-3" isLoading={isBooking}>
                   {customer ? 'Confirm Booking' : 'Sign In to Book'}
                 </GlassButton>
               </div>

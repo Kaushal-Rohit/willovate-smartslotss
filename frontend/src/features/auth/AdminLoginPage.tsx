@@ -4,6 +4,7 @@ import { GlassButton } from '../../components/ui/GlassButton';
 import { InputField } from '../../components/ui/InputField';
 import { AdminAccount } from '../../types';
 import { authenticateAdmin } from '../../services/dataStore';
+import { ApiError, loginAdminApi, shouldUseApi, syncApiData } from '../../services/apiClient';
 
 export const AdminLoginPage: React.FC<{ onLogin?: (account: AdminAccount) => void }> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -11,10 +12,25 @@ export const AdminLoginPage: React.FC<{ onLogin?: (account: AdminAccount) => voi
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+
+    try {
+      if (shouldUseApi()) {
+        const account = await loginAdminApi(email, password);
+        await syncApiData({ businessId: account.businessId, includeInactive: true });
+        onLogin?.(account);
+        return;
+      }
+    } catch (apiError) {
+      if (apiError instanceof ApiError && apiError.status !== 0) {
+        setError(apiError.message);
+        setIsLoading(false);
+        return;
+      }
+    }
 
     window.setTimeout(() => {
       const account = authenticateAdmin(email, password);
