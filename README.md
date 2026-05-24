@@ -229,39 +229,8 @@ VITE_API_BASE_URL=http://localhost:5000
 VITE_USE_MOCK_DATA=false
 ```
 
-Backend connection string lives in `backend/appsettings.json`. Use `backend/appsettings.example.json` as the safe template.
 
-Do not commit real secrets, database passwords, API keys, JWT secrets, or private connection strings.
 
-## How To Run
-
-```bash
-cd backend
-dotnet restore
-dotnet run
-
-cd frontend
-npm install
-npm run build
-npm run dev
-```
-
-## Screenshots
-
-Add frontend screenshots here before final submission:
-
-- Admin Login
-- Admin Dashboard
-- Create Offer
-- Manage Offers
-- Manage Bookings
-- Public Offer Listing
-- Offer Detail
-- Booking Confirmation
-
-## Swagger Screenshot
-
-Add Swagger/OpenAPI screenshot here after the .NET backend is connected.
 
 ## Demo Video
 
