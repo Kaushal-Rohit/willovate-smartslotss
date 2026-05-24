@@ -35,7 +35,7 @@ const STORE_KEYS = {
 const GYM_GIF = '/images/218fc872735831.5bf1e45999c40.gif';
 const RESTAURANT_GIF = '/images/NOT3bRt5u3.gif';
 const SALON_GIF =
-  '/images/sophiachang-illustrator-designer-esymai-bun-warbyparker-illustrator-thestudiomdr-lagreemethod-pilates-fitness-wellness-holistic-workout-sweat-swag-tights-lululemon-sportsbra-studiowrap-marymillermethod5.gif';
+  '/images/salon-motion.gif';
 const ACTION_GIF = '/images/bc2c5056215299.59a596bb8c323.gif';
 const CLINIC_AVIF =
   '/images/personal-trainer-gives-instruction-woman-squat-exercise-illustration_166119-18.avif';
@@ -469,7 +469,7 @@ const normalizeOffer = (offer: Offer): Offer => {
   const discountPercentage = originalPrice > 0 ? Math.max(0, Math.round(((originalPrice - offerPrice) / originalPrice) * 100)) : 0;
   const totalCapacity = Math.max(1, Number(offer.totalCapacity) || 1);
   const maxBookingPerCustomer = Math.max(1, Number(offer.maxBookingPerCustomer) || 1);
-  const imageUrl = offer.imageUrl || businessTypeAssets[business.businessType] || ACTION_GIF;
+  const imageUrl = offer.imageUrl?.includes('sophiachang-illustrator') ? SALON_GIF : offer.imageUrl || businessTypeAssets[business.businessType] || ACTION_GIF;
 
   return {
     ...offer,

@@ -10,7 +10,7 @@ The platform is designed for restaurants, gyms, salons, clinics, coaching classe
 
 ## Current Implementation Note
 
-This repository currently contains the React + TypeScript frontend implementation with a localStorage-backed mock data layer that mirrors the required API/data model. The PDF-required backend stack is documented below for submission alignment, but no .NET backend project files were present in this checkout.
+This repository currently contains the React + TypeScript frontend implementation in `frontend/` with a localStorage-backed mock data layer that mirrors the required API/data model. The PDF-required backend stack is documented below for submission alignment, but no .NET backend project files were present in this checkout.
 
 ## Features
 
@@ -150,6 +150,7 @@ customer@smartslot.test / User@12345
 ## Frontend Setup
 
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
@@ -193,7 +194,7 @@ Prefer DTOs over returning raw EF entities directly.
 Copy `.env.example` to `.env.local` for local frontend development.
 
 ```bash
-cp .env.example .env.local
+cp .env.example frontend/.env.local
 ```
 
 Do not commit real secrets, database passwords, API keys, JWT secrets, or private connection strings.
@@ -201,6 +202,7 @@ Do not commit real secrets, database passwords, API keys, JWT secrets, or privat
 ## How To Run
 
 ```bash
+cd frontend
 npm install
 npm run build
 npm run dev

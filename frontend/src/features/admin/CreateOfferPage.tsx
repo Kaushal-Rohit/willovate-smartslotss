@@ -297,7 +297,7 @@ export const CreateOfferPage: React.FC<CreateOfferPageProps> = ({ businessId, of
                 <option value={businessTypeAssets[business.businessType]}>{business.businessType} default</option>
                 <option value="/images/218fc872735831.5bf1e45999c40.gif">Gym motion</option>
                 <option value="/images/NOT3bRt5u3.gif">Restaurant motion</option>
-                <option value="/images/sophiachang-illustrator-designer-esymai-bun-warbyparker-illustrator-thestudiomdr-lagreemethod-pilates-fitness-wellness-holistic-workout-sweat-swag-tights-lululemon-sportsbra-studiowrap-marymillermethod5.gif">Salon motion</option>
+                <option value="/images/salon-motion.gif">Salon motion</option>
                 <option value="/images/bc2c5056215299.59a596bb8c323.gif">Action motion</option>
                 <option value="/images/personal-trainer-gives-instruction-woman-squat-exercise-illustration_166119-18.avif">Clinic visual</option>
               </select>
